@@ -242,10 +242,7 @@ impl Font {
     pub fn from_bytes<Data: Deref<Target = [u8]>>(data: Data, settings: FontSettings) -> FontResult<Font> {
         let hash = crate::hash::hash(&data);
 
-        let face = match Face::parse(&data, settings.collection_index) {
-            Ok(f) => f,
-            Err(e) => return Err(convert_error(e)),
-        };
+        let face = Face::parse(&data, settings.collection_index).map_err(|e| convert_error(e))?;
         let name = convert_name(&face);
 
         // Optionally get kerning values for the font. This should be a try block in the future.
