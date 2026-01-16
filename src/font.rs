@@ -345,6 +345,28 @@ impl Font {
         })
     }
 
+    /// Using specified character to calculate [`OutlineBounds`] for missing characters.
+    ///
+    /// This boundary will be pick up by [`Layout`](crate::layout::Layout) and [`GlyphPosition`](crate::layout::GlyphPosition)
+    /// will contain good data for generating replacement glyphs.
+    ///
+    /// Return `true` if this font contains the specified character and the boundary has been updated,
+    /// otherwise `false`.
+    pub fn update_missing_character_bounds(&mut self, character: char) -> bool {
+        let idx = self.lookup_glyph_index(character);
+        if idx > 0 {
+            let mut glyph = self.glyphs[idx as usize].clone();
+
+            // Clear pixel data
+            glyph.v_lines = Vec::new();
+            glyph.m_lines = Vec::new();
+
+            // Update glyph data for missing character
+            self.glyphs[0] = glyph;
+        }
+        false
+    }
+
     /// Returns the font's face name if it has one. It is from `Name ID 4` (Full Name) in the name table.
     /// See https://learn.microsoft.com/en-us/typography/opentype/spec/name#name-ids for more info.
     pub fn name(&self) -> Option<&str> {
