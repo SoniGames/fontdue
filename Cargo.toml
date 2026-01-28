@@ -32,5 +32,5 @@ variable-fonts = ["ttf-parser/variable-fonts"]
 ttf-parser = { version = "0.25", default-features = false, features = [
     "opentype-layout", "no-std-float"
 ] }
-hashbrown = { version = "0.15", optional = true }
+hashbrown = { version = "0.16", optional = true }
 rayon = { version = "1.10", optional = true }
