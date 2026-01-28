@@ -13,7 +13,14 @@ use core::hash::{Hash, Hasher};
 use core::mem;
 use core::num::NonZeroU16;
 use core::ops::Deref;
-use ttf_parser::{Face, FaceParsingError, GlyphId, Tag};
+use ttf_parser::{FaceParsingError, GlyphId};
+
+#[cfg(not(feature = "variable-fonts"))]
+use ttf_parser::{Face, Tag};
+
+// Re-export
+#[cfg(feature = "variable-fonts")]
+pub use ttf_parser::{Face, Tag};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -172,10 +179,6 @@ pub struct FontSettings {
     /// i.e. `Font::raserize_indexed`, as singular characters do not have enough context to be
     /// substituted.
     pub load_substitutions: bool,
-
-    /// The weight of the font. This is used for variable fonts.
-    #[cfg(feature = "variable-fonts")]
-    pub weight: f32,
 }
 
 impl Default for FontSettings {
@@ -184,8 +187,6 @@ impl Default for FontSettings {
             collection_index: 0,
             scale: 40.0,
             load_substitutions: true,
-            #[cfg(feature = "variable-fonts")]
-            weight: 400.0,
         }
     }
 }
@@ -246,15 +247,15 @@ fn convert_name(face: &Face) -> Option<String> {
 impl Font {
     /// Constructs a font from an array of bytes.
     pub fn from_bytes<Data: Deref<Target = [u8]>>(data: Data, settings: FontSettings) -> FontResult<Font> {
-        let hash = crate::hash::hash(&data);
+        let face = Face::parse(&data, settings.collection_index).map_err(|e| convert_error(e))?;
 
-        #[allow(unused_mut, reason = "For set_variation method ")]
-        let mut face = Face::parse(&data, settings.collection_index).map_err(|e| convert_error(e))?;
+        Self::from_font_face(&face, settings)
+    }
 
-        #[cfg(feature = "variable-fonts")]
-        face.set_variation(Tag::from_bytes(&b"wght"), settings.weight);
-
-        let name = convert_name(&face);
+    /// Constructs a font from a font face.
+    pub fn from_font_face(face: &Face, settings: FontSettings) -> FontResult<Font> {
+        let hash = crate::hash::hash(face.raw_face().data);
+        let name = convert_name(face);
 
         // Optionally get kerning values for the font. This should be a try block in the future.
         let horizontal_kern: Option<HashMap<u32, i16>> = (|| {
