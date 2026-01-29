@@ -337,6 +337,12 @@ impl<'a, U: Copy + Clone> Layout<U> {
         layout
     }
 
+    /// The x position the next glyph starts at.
+    #[inline]
+    pub fn current_pos(&self) -> f32 {
+        self.current_pos
+    }
+
     /// Resets the current layout settings and clears all appended text.
     pub fn reset(&mut self, settings: &LayoutSettings) {
         self.settings = *settings;
