@@ -37,19 +37,19 @@ pub struct StreamSliceI32<'a>(StreamSliceU32<'a>);
 impl<'a> StreamSliceI8<'a> {
     #[inline]
     pub fn get(&self, index: usize) -> Option<i8> {
-        Some(unsafe { core::mem::transmute::<u8, i8>(self.0.get(index)?) })
+        self.0.get(index).map(|u| u8::cast_signed(u))
     }
 }
 impl<'a> StreamSliceI16<'a> {
     #[inline]
     pub fn get(&self, index: usize) -> Option<i16> {
-        Some(unsafe { core::mem::transmute::<u16, i16>(self.0.get(index)?) })
+        self.0.get(index).map(|u| u16::cast_signed(u))
     }
 }
 impl<'a> StreamSliceI32<'a> {
     #[inline]
     pub fn get(&self, index: usize) -> Option<i32> {
-        Some(unsafe { core::mem::transmute::<u32, i32>(self.0.get(index)?) })
+        self.0.get(index).map(|u| u32::cast_signed(u))
     }
 }
 
@@ -164,17 +164,17 @@ impl<'a> Stream<'a> {
 
     #[inline]
     pub fn read_i8(&mut self) -> Option<i8> {
-        Some(unsafe { core::mem::transmute::<u8, i8>(self.read_u8()?) })
+        self.read_u8().map(|u| u8::cast_signed(u))
     }
 
     #[inline]
     pub fn read_i16(&mut self) -> Option<i16> {
-        Some(unsafe { core::mem::transmute::<u16, i16>(self.read_u16()?) })
+        self.read_u16().map(|u| u16::cast_signed(u))
     }
 
     #[inline]
     pub fn read_i32(&mut self) -> Option<i32> {
-        Some(unsafe { core::mem::transmute::<u32, i32>(self.read_u32()?) })
+        self.read_u32().map(|u| u32::cast_signed(u))
     }
 
     // FONT
