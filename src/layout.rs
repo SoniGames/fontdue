@@ -11,7 +11,7 @@ use core::borrow::Borrow;
 use core::hash::{Hash, Hasher};
 
 /// Horizontal alignment options for text when a max_width is provided.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum HorizontalAlign {
     /// Aligns text to the left of the region defined by the max_width.
     Left,
@@ -22,7 +22,7 @@ pub enum HorizontalAlign {
 }
 
 /// Vertical alignment options for text when a max_height is provided.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum VerticalAlign {
     /// Aligns text to the top of the region defined by the max_height.
     Top,
@@ -34,7 +34,7 @@ pub enum VerticalAlign {
 
 /// Wrap style is a hint for how strings of text should be wrapped to the next line. Line wrapping
 /// can happen when the max width/height is reached.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum WrapStyle {
     /// Word will break lines by the Unicode line breaking algorithm (Standard Annex #14) This will
     /// generally break lines where you expect them to be broken at and will preserve words.
@@ -45,7 +45,7 @@ pub enum WrapStyle {
 
 /// The direction that the Y coordinate increases in. Layout needs to be aware of your coordinate
 /// system to place the glyphs correctly.
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum CoordinateSystem {
     /// The Y coordinate increases up relative to the window or image. The higher up on the window,
     /// the more positive Y becomes.
